@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UART-CL By TheCod3r")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b00417aee91427a200ef7578be701ad8e565178e")]
 [assembly: System.Reflection.AssemblyProductAttribute("UART-CL By TheCod3r")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UART-CL By TheCod3r")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

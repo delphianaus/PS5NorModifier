@@ -1,36 +1,37 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {}
+    "C:\\PS5\\src\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {}
   },
   "projects": {
-    "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {
+    "C:\\PS5\\src\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
+        "projectUniqueName": "C:\\PS5\\src\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
         "projectName": "UART-CL By TheCod3r",
-        "projectPath": "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
-        "packagesPath": "C:\\Users\\TheCod3r\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\TheCod3r\\source\\repos\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\obj\\",
+        "projectPath": "C:\\PS5\\src\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\UART-CL By TheCod3r.csproj",
+        "packagesPath": "C:\\Users\\Justin\\.nuget\\packages\\",
+        "outputPath": "C:\\PS5\\src\\UART-CL By TheCod3r\\UART-CL By TheCod3r\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\TheCod3r\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Justin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net9.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -38,23 +39,33 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
+            "CliWrap": {
+              "target": "Package",
+              "version": "[3.8.2, )"
+            },
             "Colorful.Console": {
               "target": "Package",
               "version": "[1.2.15, )"
             },
             "System.IO.Ports": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.5, )"
             },
             "System.Management": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.5, )"
             }
           },
           "imports": [
@@ -73,7 +84,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
