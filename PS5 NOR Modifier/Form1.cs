@@ -1,95 +1,18 @@
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
+using CliWrap;
+using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.IO.Ports;
-using System;
-using System.Threading;
-using System.Collections.Generic;
-using static System.Windows.Forms.LinkLabel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Net;
 using System.Xml;
-using System.Security.Policy;
+
 
 namespace PS5_NOR_Modifier
 {
     public partial class Form1 : Form
     {
-
-        public Form1()
-        {
-            InitializeComponent();
-        }
-
-        static string CalculateChecksum(string str)
-        {
-            int sum = 0;
-            foreach (char c in str)
-            {
-                sum += (int)c;
-            }
-            return str + ":" + (sum & 0xFF).ToString("X2");
-        }
-
-        private void throwError(string errmsg)
-        {
-            MessageBox.Show(errmsg, "An Error Has Occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-
-        // We want this app to work offline, so let's declare where the local "offline" database will be stored
         string localDatabaseFile = "errorDB.xml";
 
         static SerialPort UARTSerial = new SerialPort();
-
-        /// <summary>
-        /// With thanks to  @jjxtra on Github. The code has already been created and there's no need to reinvent the wheel is there?
-        /// </summary>
-        #region Hex Code
-
-        private static IEnumerable<int> PatternAt(byte[] source, byte[] pattern)
-        {
-            for (int i = 0; i < source.Length; i++)
-            {
-                if (source.Skip(i).Take(pattern.Length).SequenceEqual(pattern))
-                {
-                    yield return i;
-                }
-            }
-        }
-
-        private static byte[] ConvertHexStringToByteArray(string hexString)
-        {
-            if (hexString.Length % 2 != 0)
-            {
-                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "The binary key cannot have an odd number of digits: {0}", hexString));
-            }
-
-            byte[] data = new byte[hexString.Length / 2];
-            for (int index = 0; index < data.Length; index++)
-            {
-                string byteValue = hexString.Substring(index * 2, 2);
-                data[index] = byte.Parse(byteValue, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            }
-
-            return data;
-        }
-
-        #endregion
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            // Upon first launch, we need to get a list of COM ports available for UART
-            string[] ports = SerialPort.GetPortNames();
-            comboComPorts.Items.Clear();
-            comboComPorts.Items.AddRange(ports);
-            comboComPorts.SelectedIndex = 0;
-            btnConnectCom.Enabled = true;
-            btnDisconnectCom.Enabled = false;
-        }
 
         // Declare offsets to detect console version
         long offsetOne = 0x1c7010;
@@ -106,6 +29,78 @@ namespace PS5_NOR_Modifier
         string? variantValue = null;
         long moboSerialOffset = 0x1C7200;
         string? moboSerialValue = null;
+
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        /* Removed to static Extension Helper class 
+        static string CalculateChecksum(string str)
+        {
+            int sum = 0;
+            foreach (char c in str)
+            {
+                sum += (int)c;
+            }
+            return str + ":" + (sum & 0xFF).ToString("X2");
+        }*/
+
+        private void throwError(string errmsg)
+        {
+            MessageBox.Show(errmsg, "An Error Has Occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        // We want this app to work offline, so let's declare where the local "offline" database will be stored
+
+
+        /// <summary>
+        /// With thanks to  @jjxtra on Github. The code has already been created and there's no need to reinvent the wheel is there?
+        /// </summary>
+        #region Hex Code
+        /* Replaced with extension method in static Extensions class 
+        private static IEnumerable<int> PatternAt(byte[] source, byte[] pattern)
+        {
+            for (int i = 0; i < source.Length; i++)
+            {
+                if (source.Skip(i).Take(pattern.Length).SequenceEqual(pattern))
+                {
+                    yield return i;
+                }
+            }
+        }*/
+
+        /* Replaced with extension method in static Extensions class
+        private static byte[] ConvertHexStringToByteArray(string hexString)
+        {
+            if (hexString.Length % 2 != 0)
+            {
+                throw new ArgumentException(String.Format(CultureInfo.InvariantCulture, "The binary key cannot have an odd number of digits: {0}", hexString));
+            }
+
+            byte[] data = new byte[hexString.Length / 2];
+            for (int index = 0; index < data.Length; index++)
+            {
+                string byteValue = hexString.Substring(index * 2, 2);
+                data[index] = byte.Parse(byteValue, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            }
+
+            return data;
+        }*/
+
+        #endregion
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // Upon first launch, we need to get a list of COM ports available for UART
+            string[] ports = SerialPort.GetPortNames();
+            comboComPorts.Items.Clear();
+            comboComPorts.Items.AddRange(ports);
+            comboComPorts.SelectedIndex = 0;
+            btnConnectCom.Enabled = true;
+            btnDisconnectCom.Enabled = false;
+        }
+
 
         private async Task DownloadDatabaseAsync()
         {
@@ -164,7 +159,7 @@ namespace PS5_NOR_Modifier
                 {
                     string response = "";
                     // Create a WebClient instance to send the request
-                    using (HttpClient client = new()) 
+                    using (HttpClient client = new())
                     {
                         // Send the request and retrieve the response as a string
                         response = await client.GetStringAsync(url);
@@ -173,10 +168,11 @@ namespace PS5_NOR_Modifier
                     XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.LoadXml(response);
 
-                    
+
                     // Get the root node
                     XmlNode? root = xmlDoc.DocumentElement;
-                    if (root is null) {
+                    if (root is null)
+                    {
                         throw new Exception("Error reading the file");
                     }
 
@@ -191,7 +187,7 @@ namespace PS5_NOR_Modifier
                             {
                                 // Get ErrorCode and Description
                                 string errorCode = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? "";
-                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText??"";
+                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? "";
 
                                 // Output the results
                                 results = "Error code: "
@@ -248,8 +244,8 @@ namespace PS5_NOR_Modifier
                             if (errorCodeNode.Name == "errorCode")
                             {
                                 // Get ErrorCode and Description
-                                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText??"";
-                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText??"";
+                                string errorCodeValue = errorCodeNode.SelectSingleNode("ErrorCode")?.InnerText ?? "";
+                                string description = errorCodeNode.SelectSingleNode("Description")?.InnerText ?? "";
 
                                 // Check if the current error code matches the requested error code
                                 if (errorCodeValue == errorCode)
@@ -279,6 +275,7 @@ namespace PS5_NOR_Modifier
             return results;
         }
 
+        /* moved to static Extensions class
         string HexStringToString(string hexString)
         {
             if (hexString == null || (hexString.Length & 1) == 1)
@@ -292,32 +289,38 @@ namespace PS5_NOR_Modifier
                 sb.Append((char)Convert.ToByte(hexChar, 16));
             }
             return sb.ToString();
-        }
+        }*/
 
         /// <summary>
         /// Lauinches a URL in a new window using the default browser...
         /// </summary>
         /// <param name="url">The URL you want to launch</param>
-        private void OpenUrl(string url)
+        /// Moved to use CLIWraoper instead of Process.Start
+        /// <summary>
+        /// Lauinches a URL in a new window using the default browser...
+        /// </summary>
+        /// <param name="url">The URL you want to launch</param>
+        /// REFACTOR CLIWrap instead of Process.Start
+        private async Task OpenUrl(string url)
         {
             try
             {
-                Process.Start(url);
+                await Cli.Wrap("start").WithArguments(url).ExecuteAsync();
             }
             catch
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     url = url.Replace("&", "^&");
-                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                    await Cli.Wrap("start").WithArguments(url).ExecuteAsync();
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    Process.Start("xdg-open", url);
+                    await Cli.Wrap("xdg-open").WithArguments(url).ExecuteAsync();
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    Process.Start("open", url);
+                    await Cli.Wrap("open").WithArguments(url).ExecuteAsync();
                 }
                 else
                 {
@@ -365,13 +368,13 @@ namespace PS5_NOR_Modifier
 
             if (fileDialogBox.ShowDialog() == DialogResult.OK)
             {
-                if(fileDialogBox.CheckFileExists == false)
+                if (!fileDialogBox.CheckFileExists)
                 {
                     throwError("The file you selected could not be found. Please check the file exists and is a valid BIN file.");
                 }
                 else
                 {
-                    if(!fileDialogBox.SafeFileName.EndsWith(".bin"))
+                    if (!fileDialogBox.SafeFileName.EndsWith(".bin"))
                     {
                         throwError("The file you selected is not a valid. Please ensure the file you are choosing is a correct BIN file and try again.");
                     }
@@ -420,21 +423,15 @@ namespace PS5_NOR_Modifier
                             offsetTwoValue = null;
                         }
 
-                        
-                        if(offsetOneValue?.Contains("22020101")??false)
+
+                        if (offsetOneValue?.Contains("22020101") ?? false)
                         {
                             modelInfo.Text = "Disc Edition";
                         }
                         else
                         {
-                            if(offsetTwoValue?.Contains("22030101") ?? false)
-                            {
-                                modelInfo.Text = "Digital Edition";
-                            }
-                            else
-                            {
-                                modelInfo.Text = "Unknown";
-                            }
+                            modelInfo.Text = (offsetTwoValue?.Contains("22030101") ?? false) ?
+                            "Digital Edition" : "Unknown";
                         }
 
                         #endregion
@@ -458,14 +455,7 @@ namespace PS5_NOR_Modifier
 
 
 
-                        if(moboSerialValue != null)
-                        {
-                            moboSerialInfo.Text = HexStringToString(moboSerialValue);
-                        }
-                        else
-                        {
-                            moboSerialInfo.Text = "Unknown";
-                        }
+                        moboSerialInfo.Text = (moboSerialValue is not null) ? moboSerialValue.HexStringToString() : "Unknown";
 
                         #endregion
 
@@ -490,9 +480,8 @@ namespace PS5_NOR_Modifier
 
                         if (serialValue != null)
                         {
-                            serialNumber.Text = HexStringToString(serialValue);
-                            serialNumberTextbox.Text = HexStringToString(serialValue);
-
+                            serialNumber.Text = serialValue.HexStringToString();
+                            serialNumberTextbox.Text = serialValue.HexStringToString();
                         }
                         else
                         {
@@ -518,16 +507,9 @@ namespace PS5_NOR_Modifier
                             WiFiMacValue = null;
                         }
 
-                        if (WiFiMacValue != null)
-                        {
-                            macAddressInfo.Text = WiFiMacValue;
-                            wifiMacAddressTextbox.Text = WiFiMacValue;
-                        }
-                        else
-                        {
-                            macAddressInfo.Text = "Unknown";
-                            wifiMacAddressTextbox.Text = "";
-                        }
+                        macAddressInfo.Text = (WiFiMacValue is not null) ? WiFiMacValue : "Unknown";
+                        wifiMacAddressTextbox.Text = (WiFiMacValue is not null) ? WiFiMacValue : "";
+
 
                         #endregion
 
@@ -548,17 +530,11 @@ namespace PS5_NOR_Modifier
                             LANMacValue = null;
                         }
 
-                        if (LANMacValue != null)
-                        {
-                            LANMacAddressInfo.Text = LANMacValue;
-                            lanMacAddressTextbox.Text = LANMacValue;
-                        }
-                        else
-                        {
-                            LANMacAddressInfo.Text = "Unknown";
-                            lanMacAddressTextbox.Text = "";
-                        }
 
+                        LANMacAddressInfo.Text = (LANMacValue is not null) ? LANMacValue : "Unknown";
+                        lanMacAddressTextbox.Text = (LANMacValue is not null) ? LANMacValue : "";
+
+                       
                         #endregion
 
                         #region Extract Board Variant
@@ -578,18 +554,9 @@ namespace PS5_NOR_Modifier
                             variantValue = null;
                         }
 
-
-
-                        if (variantValue != null)
+                        boardVariant.Text = (variantValue is not null) ? variantValue.HexStringToString() : "Unknown";
+                        boardVariant.Text += boardVariant.Text switch
                         {
-                            boardVariant.Text = HexStringToString(variantValue);
-                        }
-                        else
-                        {
-                            boardVariant.Text = "Unknown";
-                        }
-
-                        boardVariant.Text += boardVariant.Text switch {
                             _ when boardVariant.Text.EndsWith("00A") || boardVariant.Text.EndsWith("00B") => " - Japan",
                             _ when boardVariant.Text.EndsWith("01A") || boardVariant.Text.EndsWith("01B") ||
                                    boardVariant.Text.EndsWith("15A") || boardVariant.Text.EndsWith("15B") => " - US, Canada, (North America)",
@@ -602,11 +569,11 @@ namespace PS5_NOR_Modifier
                             _ when boardVariant.Text.EndsWith("08A") || boardVariant.Text.EndsWith("08B") => " - Russia, Ukraine, India, Central Asia",
                             _ when boardVariant.Text.EndsWith("09A") || boardVariant.Text.EndsWith("09B") => " - Mainland China",
                             _ when boardVariant.Text.EndsWith("11A") || boardVariant.Text.EndsWith("11B") ||
-                                   boardVariant.Text.EndsWith("14A") || boardVariant.Text.EndsWith("14B") 
+                                   boardVariant.Text.EndsWith("14A") || boardVariant.Text.EndsWith("14B")
                                 => " - Mexico, Central America, South America",
                             _ when boardVariant.Text.EndsWith("16A") || boardVariant.Text.EndsWith("16B") => " - Europe / Middle East / Africa",
                             _ when boardVariant.Text.EndsWith("18A") || boardVariant.Text.EndsWith("18B") => " - Singapore, Korea, Asia",
-                            _=> " - Unknown Region"
+                            _ => " - Unknown Region"
                         };
                         #endregion
                     }
@@ -628,14 +595,14 @@ namespace PS5_NOR_Modifier
             }
             else
             {
-                if(boardModelSelectionBox.Text == "")
+                if (boardModelSelectionBox.Text == "")
                 {
                     throwError("Please select a valid board model before saving new BIOS information!");
                     errorShownAlready = true;
                 }
                 else
                 {
-                    if(boardVariantSelectionBox.Text == "")
+                    if (boardVariantSelectionBox.Text == "")
                     {
                         throwError("Please select a valid board variant before saving new BIOS information!");
                         errorShownAlready = true;
@@ -657,24 +624,21 @@ namespace PS5_NOR_Modifier
                             fileNameToLookFor = saveBox.FileName;
 
                             #region Set the new model info
-                            if (modelInfo.Text == "Disc Edition")
+                            if (modelInfo.Text.IsDiscEdition())
                             {
                                 try
                                 {
-
-                                    if (boardModelSelectionBox.Text == "Digital Edition")
-
+                                    if (boardModelSelectionBox.Text.IsDigitalEdition())
                                     {
-
-                                        byte[] find = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                        byte[] replace = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                        byte[] find = Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
+                                        byte[] replace = Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
                                         if (find.Length != replace.Length)
                                         {
                                             throwError("The length of the old hex value does not match the length of the new hex value!");
                                             errorShownAlready = true;
                                         }
                                         byte[] bytes = File.ReadAllBytes(newFile);
-                                        foreach (int index in PatternAt(bytes, find))
+                                        foreach (int index in bytes.GetPatternAt(find))
                                         {
                                             for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                             {
@@ -690,27 +654,24 @@ namespace PS5_NOR_Modifier
                                     throwError("An error occurred while saving your BIOS file");
                                     errorShownAlready = true;
                                 }
-                            }
+                            }   
                             else
                             {
-                                if(modelInfo.Text == "Digital Edition")
+                                if (modelInfo.Text.IsDigitalEdition())
                                 {
                                     try
                                     {
-
-                                        if (boardModelSelectionBox.Text == "Disc Edition")
-
+                                        if (boardModelSelectionBox.Text.IsDiscEdition())
                                         {
-
-                                            byte[] find = ConvertHexStringToByteArray(Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim());
-                                            byte[] replace = ConvertHexStringToByteArray(Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim());
+                                            byte[] find = Regex.Replace("22030101", "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray(); 
+                                            byte[] replace = Regex.Replace("22020101", "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
                                             if (find.Length != replace.Length)
                                             {
                                                 throwError("The length of the old hex value does not match the length of the new hex value!");
                                                 errorShownAlready = true;
                                             }
                                             byte[] bytes = File.ReadAllBytes(newFile);
-                                            foreach (int index in PatternAt(bytes, find))
+                                            foreach (int index in bytes.GetPatternAt(find))
                                             {
                                                 for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                                 {
@@ -740,11 +701,11 @@ namespace PS5_NOR_Modifier
                                 byte[] newVariantSelection = Encoding.UTF8.GetBytes(boardVariantSelectionBox.Text);
                                 string newVariantHex = Convert.ToHexString(newVariantSelection);
 
-                                byte[] find = ConvertHexStringToByteArray(Regex.Replace(oldVariantHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-                                byte[] replace = ConvertHexStringToByteArray(Regex.Replace(newVariantHex, "0x|[ ,]", string.Empty).Normalize().Trim());
+                                byte[] find = Regex.Replace(oldVariantHex, "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
+                                byte[] replace = Regex.Replace(newVariantHex, "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
 
                                 byte[] bytes = File.ReadAllBytes(newFile);
-                                foreach (int index in PatternAt(bytes, find))
+                                foreach (int index in bytes.GetPatternAt(find))
                                 {
                                     for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                     {
@@ -754,7 +715,7 @@ namespace PS5_NOR_Modifier
                                 }
 
                             }
-                            catch(System.ArgumentException ex)
+                            catch (System.ArgumentException ex)
                             {
                                 throwError(ex.Message.ToString());
                                 errorShownAlready = true;
@@ -773,11 +734,11 @@ namespace PS5_NOR_Modifier
                                 byte[] newSerial = Encoding.UTF8.GetBytes(serialNumberTextbox.Text);
                                 string newSerialHex = Convert.ToHexString(newSerial);
 
-                                byte[] find = ConvertHexStringToByteArray(Regex.Replace(oldSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim());
-                                byte[] replace = ConvertHexStringToByteArray(Regex.Replace(newSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim());
+                                byte[] find = Regex.Replace(oldSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
+                                byte[] replace = Regex.Replace(newSerialHex, "0x|[ ,]", string.Empty).Normalize().Trim().HexStringToByteArray();
 
                                 byte[] bytes = File.ReadAllBytes(newFile);
-                                foreach (int index in PatternAt(bytes, find))
+                                foreach (int index in bytes.GetPatternAt(find))
                                 {
                                     for (int i = index, replaceIndex = 0; i < bytes.Length && replaceIndex < replace.Length; i++, replaceIndex++)
                                     {
@@ -804,7 +765,7 @@ namespace PS5_NOR_Modifier
                 }
             }
 
-            if(File.Exists(fileNameToLookFor) && errorShownAlready == false)
+            if (File.Exists(fileNameToLookFor) && !errorShownAlready)
             {
                 // Reset everything and show message
                 ResetAppFields();
@@ -862,7 +823,6 @@ namespace PS5_NOR_Modifier
                     btnDisconnectCom.Enabled = false;
                     toolStripStatusLabel1.Text = "Could not connect to UART. Please try again!";
                 }
-
             }
             else
             {
@@ -878,7 +838,7 @@ namespace PS5_NOR_Modifier
             // Let's close the COM port
             try
             {
-                if(UARTSerial.IsOpen == true)
+                if (UARTSerial.IsOpen) // same as IsOpen == true
                 {
                     UARTSerial.Close();
                     btnConnectCom.Enabled = true;
@@ -886,7 +846,7 @@ namespace PS5_NOR_Modifier
                     toolStripStatusLabel1.Text = "Disconnected from UART...";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 toolStripStatusLabel1.Text = "An error occurred while disconnecting from UART. Please try again...";
@@ -902,18 +862,15 @@ namespace PS5_NOR_Modifier
         {
             // Let's read the error codes from UART
             txtUARTOutput.Text = "";
-
-            if (UARTSerial.IsOpen == true)
+            if (UARTSerial.IsOpen) // same as IsOpen == true
             {
                 try
                 {
-
                     List<string> UARTLines = new();
-
                     for (var i = 0; i <= 10; i++)
                     {
                         var command = $"errlog {i}";
-                        var checksum = CalculateChecksum(command);
+                        var checksum = command.GetCalculateChecksum();//CalculateChecksum(command);
                         UARTSerial.WriteLine(checksum);
                         do
                         {
@@ -961,13 +918,13 @@ namespace PS5_NOR_Modifier
         // If the app is closed before UART is terminated, we need to at least try to close the COM port gracefully first
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(UARTSerial.IsOpen == true)
+            if (UARTSerial.IsOpen) // same as IsOpen == true
             {
                 try
                 {
                     UARTSerial.Close();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "An error occurred...", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -1018,29 +975,26 @@ namespace PS5_NOR_Modifier
         {
             DialogResult result = MessageBox.Show("This will clear error codes from the console by sending the \"errlog clear\" command. Are you sure you would like to proceed? This action cannot be undone!", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if(result == DialogResult.Yes)
+            if (result == DialogResult.Yes)
             {
                 // Let's read the error codes from UART
                 txtUARTOutput.Text = "";
-
-                if (UARTSerial.IsOpen == true)
+                if (UARTSerial.IsOpen) // same as IsOpen == true)
                 {
                     try
                     {
-
                         List<string> UARTLines = new();
+                        var command = "errlog clear";
+                        var checksum = command.GetCalculateChecksum();//CalculateChecksum(command);
+                        UARTSerial.WriteLine(checksum);
+                        do
+                        {
+                            var line = UARTSerial.ReadLine();                            }
 
-                            var command = "errlog clear";
-                            var checksum = CalculateChecksum(command);
-                            UARTSerial.WriteLine(checksum);
-                            do
+                            if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                var line = UARTSerial.ReadLine();
-                                if (!string.Equals($"{command}:{checksum:X2}", line, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    UARTLines.Add(line);
-                                }
-                            } while (UARTSerial.BytesToRead != 0);
+                                UARTLines.Add(line);
+                        } while (UARTSerial.BytesToRead != 0);
 
                         foreach (var l in UARTLines)
                         {
@@ -1092,14 +1046,13 @@ namespace PS5_NOR_Modifier
                 // Let's read the error codes from UART
                 txtUARTOutput.Text = "";
 
-                if (UARTSerial.IsOpen == true)
+                if (UARTSerial.IsOpen) // same as IsOpen == true
                 {
                     try
                     {
-
                         List<string> UARTLines = new();
-
-                        var checksum = CalculateChecksum(txtCustomCommand.Text);
+                        var checksum = txtCustomCommand.Text.GetCalculateChecksum();
+                        //CalculateChecksum(txtCustomCommand.Text);
                         UARTSerial.WriteLine(checksum);
                         do
                         {
@@ -1150,7 +1103,7 @@ namespace PS5_NOR_Modifier
         /// <param name="e"></param>
         private void txtCustomCommand_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == (char)Keys.Enter)
+            if (e.KeyChar == (char)Keys.Enter)
             {
                 btnSendCommand.PerformClick();
             }
